@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/d7z-homelab/console/pkg/migrate"
 	"github.com/spf13/afero"
 	"go.uber.org/zap"
 	"os"
@@ -46,6 +47,11 @@ func main() {
 	if err = fs.MkdirAll("", 0755); err != nil && !os.IsExist(err) {
 		zap.L().Fatal("failed to create directory", zap.Error(err))
 	}
+	//init
+	if err = migrate.Migrate(engine); err != nil {
+		zap.L().Fatal("failed to migrate database", zap.Error(err))
+	}
+	//
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, "db", engine)
 	ctx = context.WithValue(ctx, "fs", fs)
